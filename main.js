@@ -1,24 +1,47 @@
+let siteVisitors = ["Hejpa", "Dejpa"]
+
 window.onload = () => {
-    let siteVisitors = ["Hejpa", "Dejpa", "lejpa"]
-
-    let pTag = document.createElement("p")
+    let pTag = document.getElementById("pTag")
     const body = document.getElementById("main")
-    const input = document.getElementById("input")
+    document.getElementById("input").addEventListener("keydown", function (e) {
+        if (e.code === "Enter") {
+            e.preventDefault()
+            handleClick()
+        }
+    });
 
-    let listFromLS = localStorage.getItem("previousVisitors")
-
-    if(listFromLS){
+    let listFromLS = JSON.parse(localStorage.getItem("previousVisitors"))
+    if (listFromLS) {
         siteVisitors = []
-        siteVisitors.push(listFromLS)
+        listFromLS.forEach(name => {
+            siteVisitors.push(name)
+        });
     } else {
-        localStorage.setItem("previousVisitors", siteVisitors)
+        localStorage.setItem("previousVisitors", JSON.stringify(siteVisitors))
     }
 
-    console.log(pTag)
-    pTag.innerHTML = siteVisitors
     body.appendChild(pTag)
 }
 
-function handleChange (){
-    console.log(input.value)
+function handleClick() {
+    let inputName = input.value.charAt(0).toUpperCase() + input.value.slice(1)
+    let nameIsInLS = false
+
+    siteVisitors.map(name => {
+        if (name === inputName) {
+            nameIsInLS = true
+            return pTag.innerHTML = "Välkommen tillbaka " + name + "!"
+        }
+    })
+
+    if (!nameIsInLS) {
+        siteVisitors.push(inputName)
+        localStorage.setItem("previousVisitors", JSON.stringify(siteVisitors))
+        pTag.innerHTML = "Välkommen " + inputName + "!"
+    }
+
+    input.value = ""
+    const form = document.getElementById("form")
+    form.style = "display: none;"
+    setTimeout(() => pTag.style = "display: none;", 3000)
 }
